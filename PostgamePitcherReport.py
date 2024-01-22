@@ -748,19 +748,19 @@ def create_presentation(averages):
             cell.text_frame.paragraphs[0].alignment = PP_ALIGN.CENTER 
             cell.vertical_anchor = MSO_ANCHOR.MIDDLE
             
-    prs.save(os.path.join("C:\\Users\\cmhea\\Documents\\baseball\\Postgame Pitcher Reports", date, names[name_counter], names[name_counter] + '.pptx'))
+    prs.save(os.path.join(date, names[name_counter], names[name_counter] + '.pptx'))
 
-    imbp = Image.open(os.path.join("C:\\Users\\cmhea\\Documents\\baseball\\Postgame Pitcher Reports", date, names[name_counter], 'breakplot' + '.png'))
-    imbp.crop((65,50,590,435)).save(os.path.join("C:\\Users\\cmhea\\Documents\\baseball\\Postgame Pitcher Reports", date, names[name_counter], 'breakplot' + '.png'))
+    imbp = Image.open(os.path.join(date, names[name_counter], 'breakplot' + '.png'))
+    imbp.crop((65,50,590,435)).save(os.path.join(date, names[name_counter], 'breakplot' + '.png'))
 
-    img_bp = os.path.join("C:\\Users\\cmhea\\Documents\\baseball\\Postgame Pitcher Reports", date, names[name_counter], 'breakplot' + '.png')
+    img_bp = os.path.join(date, names[name_counter], 'breakplot' + '.png')
     add_picture = slide.shapes.add_picture(img_bp,Inches(6.3866666),Inches(3.8), width=Inches(4.4), height=Inches(3.23))
     line = add_picture.line
     line.color.rgb = RGBColor(0, 0, 0)
     line.width = Inches(0.025)
 
         # Opens a image in RGB mode
-    im = Image.open(os.path.join("C:\\Users\\cmhea\\Documents\\baseball\\Postgame Pitcher Reports", date, names[name_counter], 'Right' + '.png'))
+    im = Image.open(os.path.join(date, names[name_counter], 'Right' + '.png'))
 
     # Size of the image in pixels (size of original image)
     # (This is not mandatory)
@@ -768,31 +768,31 @@ def create_presentation(averages):
  
     # Cropped image of above dimension
     # (It will not change original image)
-    im1 = im.crop((20,6,widthr,369)).save(os.path.join("C:\\Users\\cmhea\\Documents\\baseball\\Postgame Pitcher Reports", date, names[name_counter], 'Right' + '.png'))
+    im1 = im.crop((20,6,widthr,369)).save(os.path.join(date, names[name_counter], 'Right' + '.png'))
 
-    img_rhh = os.path.join("C:\\Users\\cmhea\\Documents\\baseball\\Postgame Pitcher Reports", date, names[name_counter], 'Right' + '.png')
+    img_rhh = os.path.join(date, names[name_counter], 'Right' + '.png')
     add_picture2 = slide.shapes.add_picture(img_rhh,Inches(3.3),Inches(3.8), width=Inches(2.8474), height=Inches(3.23))
     line = add_picture2.line
     line.color.rgb = RGBColor(0, 0, 0)
     line.width = Inches(0.025)
 
-    iml = Image.open(os.path.join("C:\\Users\\cmhea\\Documents\\baseball\\Postgame Pitcher Reports", date, names[name_counter], 'Left' + '.png'))
+    iml = Image.open(os.path.join(date, names[name_counter], 'Left' + '.png'))
     widthl, heightl = iml.size
-    im2 = iml.crop((20,6,widthl,369)).save(os.path.join("C:\\Users\\cmhea\\Documents\\baseball\\Postgame Pitcher Reports", date, names[name_counter], 'Left' + '.png'))
+    im2 = iml.crop((20,6,widthl,369)).save(os.path.join(date, names[name_counter], 'Left' + '.png'))
 
-    img_lhh = os.path.join("C:\\Users\\cmhea\\Documents\\baseball\\Postgame Pitcher Reports", date, names[name_counter], 'Left' + '.png')
+    img_lhh = os.path.join(date, names[name_counter], 'Left' + '.png')
     add_picture3 = slide.shapes.add_picture(img_lhh,Inches(.20),Inches(3.8), width=Inches(2.8474), height=Inches(3.23))
     line = add_picture3.line
     line.color.rgb = RGBColor(0, 0, 0)
     line.width = Inches(0.025)
 
-    newpath = os.path.join("C:\\Users\\cmhea\\Documents\\baseball\\Postgame Pitcher Reports", date, 'PDFs')
+    newpath = os.path.join(date, 'PDFs')
     if not os.path.exists(newpath):
         os.makedirs(newpath)
 
-    prs.save(os.path.join("C:\\Users\\cmhea\\Documents\\baseball\\Postgame Pitcher Reports", date, names[name_counter], names[name_counter] + '.pptx'))
+    prs.save(os.path.join(date, names[name_counter], names[name_counter] + '.pptx'))
 
-    PPTtoPDF(os.path.join("C:\\Users\\cmhea\\Documents\\baseball\\Postgame Pitcher Reports", date, names[name_counter], names[name_counter] + '.pptx'),os.path.join("C:\\Users\\cmhea\\Documents\\baseball\\Postgame Pitcher Reports", date, 'PDFs', name[0][:-1] + ' ' + date + '.pdf'))
+    PPTtoPDF(os.path.join(date, names[name_counter], names[name_counter] + '.pptx'),os.path.join(date, 'PDFs', name[0][:-1] + ' ' + date + '.pdf'))
 
     return
 
@@ -1017,9 +1017,9 @@ def create_presentation_game(averages,bip_info,count_info):
     if not os.path.exists(newpath):
         os.makedirs(newpath)
 
-    prs.save(os.path.join(date, names[name_counter], names[name_counter] + '.pptx'))
+    prs.save(os.path.join(os.getcwd(), date, names[name_counter], names[name_counter] + '.pptx'))
 
-    PPTtoPDF(os.path.join("C:\\Users\\cmhea\\Documents\\baseball\\Postgame Pitcher Reports", date, names[name_counter], names[name_counter] + '.pptx'),os.path.join("C:\\Users\\cmhea\\Documents\\baseball\\Postgame Pitcher Reports", date, 'PDFs', name[0][:-1] + name[1] + ' ' + date + '.pdf'))
+    PPTtoPDF(os.path.join(os.getcwd(), date, names[name_counter], names[name_counter] + '.pptx'),os.path.join(os.getcwd(), date, 'PDFs', name[0][:-1] + name[1] + ' ' + date + '.pdf'))
 
     return
 #Main
