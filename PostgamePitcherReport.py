@@ -140,6 +140,7 @@ def pull_stats_from_trackman():
 
     return return_list
 
+
 #Function pulls data from CSV in order to make the Pitch Location Charts
 def get_pitch_location():
 
