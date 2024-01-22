@@ -47,7 +47,7 @@ pitchtypes = ['Fastball','Sinker','Cutter', 'Slider','Curveball', 'ChangeUp', 'S
 name_counter = 0
 
 #List of Names for Players to Run program through
-names = ['']
+names = []
 
 #Game Type (Game, Bullpen, Scrimmage)
 game_type = 'Scrimmage'
@@ -55,7 +55,7 @@ game_type = 'Scrimmage'
 home_or_away = 'Home'
 
 #'on' or 'off'
-annotate = 'on'
+annotate = 'off'
 
 #Global List that are added with data
 pitch_types = []
@@ -71,7 +71,9 @@ pitch_result = []
 vaa =[]
 
 #Folder/File name and text box in upper right of template
-date = "12-3-23"
+date = "Season2023"
+
+pitcher_team = "ORE_BEA"
     
 #name_df = global_df
 
@@ -104,7 +106,8 @@ def pull_data_from_box_score(home_or_away):
 
 def pull_names_from_trackman():
     global names
-    name_df = global_df.drop(global_df[global_df.PitcherTeam != 'ORE_BEA'].index)
+    global pitcher_team
+    name_df = global_df.drop(global_df[global_df.PitcherTeam != pitcher_team].index)
     names = pd.unique(name_df['Pitcher'])
     return
 
@@ -1023,7 +1026,7 @@ def main ():
     global home_or_away
     global name_counter
     #name_fix_csv()
-    #pull_names_from_trackman()
+    pull_names_from_trackman()
     #box = pull_data_from_box_score(home_or_away)
     for k in range(len(names)):
         print(names[name_counter])
