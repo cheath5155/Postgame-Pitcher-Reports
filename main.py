@@ -75,6 +75,7 @@ date = "Season2023"
 
 pitcher_team = "ORE_BEA"
     
+    
 #name_df = global_df
 
 def name_fix_csv():
