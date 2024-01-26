@@ -71,8 +71,9 @@ pitch_result = []
 vaa =[]
 
 #Folder/File name and text box in upper right of template
-date = "Season2023"
+date = "Season 2023"
 
+#Change to Team 
 pitcher_team = "ORE_BEA"
     
     
@@ -855,6 +856,8 @@ def create_presentation_game(averages,bip_info,count_info):
             cell = table.cell((i+1),j)
             cell.text = averages[i][j]
             cell.text_frame.paragraphs[0].font.size = Pt(14.5)
+            if j == 9:
+                cell.text_frame.paragraphs[0].font.size = Pt(12)
             cell.text_frame.paragraphs[0].font.name = 'Bahnschrift'
             cell.text_frame.paragraphs[0].alignment = PP_ALIGN.CENTER 
             cell.vertical_anchor = MSO_ANCHOR.MIDDLE
