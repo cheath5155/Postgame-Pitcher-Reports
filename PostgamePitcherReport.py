@@ -32,30 +32,40 @@ from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 import warnings
 
-
 warnings.filterwarnings("ignore")
 
+#Game Type (Game, Bullpen, Scrimmage)
+#For Opponents leave on Scrimmage
+game_type = 'Scrimmage'
+
+#Only in use when pulling Box Score Data
+home_or_away = 'Home'
+
+#'on' or 'off' (Leave off for Opponents)
+annotate = 'off'
+
+#Folder/File name and text box in upper right of template
+date = "Season 2023"
+
+#Change to Team Name in Trackman File
+pitcher_team = "ORE_BEA"
 
 #Opens Window to Choose CSV file
 csv_file =  filedialog.askopenfilename()
-#csv_file = "C:\\Users\\cmhea\\OneDrive\\Documents\\baseball\\2022 Season CSV's\\Season\\20220521-GossStadium-1_unverified (1).csv"
+
+#established global player counter
 j = 0
+
 global_df = pd.read_csv(csv_file)
+
 html = 'https://osubeavers.com/sports/baseball/stats/2023/arizona-state/boxscore/20007'
-# Diffrent Pitch Type catagories
+
+# Diffrent Pitch Type catagories do not change
 pitchtypes = ['Fastball','Sinker','Cutter', 'Slider','Curveball', 'ChangeUp', 'Splitter']
 name_counter = 0
 
 #List of Names for Players to Run program through
 names = []
-
-#Game Type (Game, Bullpen, Scrimmage)
-game_type = 'Scrimmage'
-
-home_or_away = 'Home'
-
-#'on' or 'off'
-annotate = 'off'
 
 #Global List that are added with data
 pitch_types = []
@@ -69,12 +79,6 @@ relside = []
 extension = []
 pitch_result = []
 vaa =[]
-
-#Folder/File name and text box in upper right of template
-date = "Season 2023"
-
-#Change to Team 
-pitcher_team = "ORE_BEA"
     
     
 #name_df = global_df
