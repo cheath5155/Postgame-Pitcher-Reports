@@ -42,13 +42,15 @@ game_type = 'Scrimmage'
 home_or_away = 'Home'
 
 #'on' or 'off' (Leave off for Opponents)
-annotate = 'off'
+annotate = 'on'
 
-#Folder/File name and text box in upper right of template
-date = "Season 2023"
+#Folder/File name
+date = "3-7-24"
 
 #Change to Team Name in Trackman File
 pitcher_team = "ORE_BEA"
+
+split_fastballs = 'off'
 
 #Opens Window to Choose CSV file
 csv_file =  filedialog.askopenfilename()
@@ -61,7 +63,7 @@ global_df = pd.read_csv(csv_file)
 html = 'https://osubeavers.com/sports/baseball/stats/2023/arizona-state/boxscore/20007'
 
 # Diffrent Pitch Type catagories do not change
-pitchtypes = ['Fastball','Sinker','Cutter', 'Slider','Curveball', 'ChangeUp', 'Splitter']
+pitchtypes = ['Fastball', 'Fastball (R)', 'Fastball (L)','Sinker','Cutter', 'Slider','Curveball', 'ChangeUp', 'Splitter']
 name_counter = 0
 
 #List of Names for Players to Run program through
@@ -416,6 +418,80 @@ def average_pitch_types():
     return averages
     #while i<limit:
 
+def new_pitch_type_tables(player_df):
+    global pitchtypes
+    df_list = []
+    return_list = []
+    for i in range(len(pitchtypes)):
+        pitch_type_df = player_df[(player_df['TaggedPitchType'] == pitchtypes[i])]
+        if len(pitch_type_df.index) > 0:
+            df_list.append(pitch_type_df)
+
+    for j in range(len(df_list)):
+        pitch_type_list =[]
+        working_df = df_list[j]
+        working_df = working_df.reset_index()
+        pitch_type_list.append(working_df['TaggedPitchType'].iloc[0])
+        pitch_type_list.append(len(working_df.index))
+        pitch_type_list.append("%.1f" % round(working_df['RelSpeed'].mean(),1))
+        pitch_type_list.append("%.1f" % round(working_df['RelSpeed'].max(),1))
+        pitch_type_list.append("%.0f" % round(working_df['SpinRate'].mean(),0))
+        pitch_type_list.append("%.0f" % round(working_df['SpinRate'].max(),0))
+        pitch_type_list.append("%.1f" % round(working_df['InducedVertBreak'].mean(),1))
+        pitch_type_list.append("%.1f" % round(working_df['HorzBreak'].mean(),1))
+        spin_axis_avg = working_df['SpinAxis'].mean()
+
+        #converts spin axis to tilt
+        spin_axis = spin_axis_avg
+        spin_axis = float(spin_axis)
+        test1 = spin_axis//30
+        test2 = spin_axis%30
+        test2 = test2/30
+        if test1<7:
+            tilt1 = test1 + 6
+        elif test1>=7:
+            tilt1 = test1 - 6
+        tilt2 = test2*60
+        tilt2 = int(round(tilt2,0))
+        if tilt2<10:
+            tilt2str = str('0' + str(tilt2))
+        else:
+            tilt2str = str(tilt2)
+
+        pitch_type_list.append(str(int(round(tilt1,0))) + ':' + tilt2str)
+        vaa_df = working_df[(working_df['PlateLocSide'] < 0.83083) & (working_df['PlateLocSide'] > -0.83083) & (working_df['PlateLocHeight'] < 3.67333) & (working_df['PlateLocHeight'] > 1.52417)]
+        pitch_type_list.append("%.2f" % round(vaa_df['VertApprAngle'].mean(),2))
+        pitch_type_list.append("%.2f" % round(working_df['RelHeight'].mean(),2))
+        pitch_type_list.append("%.2f" % round(working_df['RelSide'].mean(),2))
+        pitch_type_list.append("%.2f" % round(working_df['Extension'].mean(),2))
+
+        strikes = 0
+        swings = 0
+        whiffs = 0
+        for d in range(len(working_df)):
+            if working_df.at[d,'PitchCall'] in ('FoulBall', 'StrikeCalled', 'StrikeSwinging', 'InPlay'):
+                strikes = strikes + 1
+            if working_df.at[d,'PitchCall'] in ('FoulBall', 'StrikeSwinging', 'InPlay'):
+                swings = swings + 1
+            if working_df.at[d,'PitchCall'] == 'StrikeSwinging':
+                whiffs = whiffs + 1
+        strike_percentage = round(100*(strikes/len(working_df)),0)
+        pitch_type_list.append(str(str(int(strike_percentage)) + '%'))
+        if swings > 0:
+            whiff_percentage = round(100*(whiffs/swings),0)
+            pitch_type_list.append(str(str(int(whiff_percentage)) + '%'))
+        else:
+            pitch_type_list.append('N/A')
+        
+        string_list = [str(value) for value in pitch_type_list]
+
+        return_list.append(string_list)
+
+    return return_list
+        
+
+
+
 #Create Chart Based on Pitch Location
 def pitch_loaction_chart(player_df):
     global annotate
@@ -594,6 +670,13 @@ def rel_90_view(pitch_type_tables):
     ax.axes.yaxis.set_ticklabels([])
     plt.savefig(os.path.join(date, names[name_counter], 'RelH_90V' + '.png'), bbox_inches='tight', pad_inches = -0.02)              
     return
+'''
+def spin_efficency(player_df):
+    player_df['yR'] = 60.5 - player_df['Extension']
+    player_df['tR'] = (-player_df['vy0']-(player_df['vy0']**2-2*player_df['ay0']*(50-player_df['yR']))**0.5)/player_df['ay0']
+    player_df['vxR'] = 
+'''
+
 
 #Circular Bar Plot Data Formatting
 def get_bar_plot_data():
@@ -840,7 +923,7 @@ def create_presentation_game(averages,bip_info,count_info):
     tbl[0][-1].text = style_id
 
     table_labels = ['Pitch Type','#',"AVG Velo","MAX Velo","AVG Spin","MAX Spin","Vert Break",
-    "Horz Break",'Tilt','VAA',"Rel Height","Rel Side","Exten-sion","Strike%","Whiff%"]
+    "Horz Break",'Tilt','InZone VAA',"Rel Height","Rel Side","Exten-sion","Strike%","Whiff%"]
 
 
     #creating labels for values in all tables
@@ -850,6 +933,8 @@ def create_presentation_game(averages,bip_info,count_info):
         cell.text_frame.paragraphs[0].font.size = Pt(13)
         if (i == 10 or i==13):
             cell.text_frame.paragraphs[0].font.size = Pt(12)
+        if i==9:
+            cell.text_frame.paragraphs[0].font.size = Pt(11)
         cell.text_frame.paragraphs[0].font.name = 'Bahnschrift'
         cell.text_frame.paragraphs[0].alignment = PP_ALIGN.CENTER
         cell.vertical_anchor = MSO_ANCHOR.MIDDLE
@@ -861,6 +946,8 @@ def create_presentation_game(averages,bip_info,count_info):
             cell.text = averages[i][j]
             cell.text_frame.paragraphs[0].font.size = Pt(14.5)
             if j == 9:
+                cell.text_frame.paragraphs[0].font.size = Pt(12)
+            if averages[i][j] == 'Fastball (R)' or averages[i][j] == 'Fastball (L)':
                 cell.text_frame.paragraphs[0].font.size = Pt(12)
             cell.text_frame.paragraphs[0].font.name = 'Bahnschrift'
             cell.text_frame.paragraphs[0].alignment = PP_ALIGN.CENTER 
@@ -1030,10 +1117,17 @@ def create_presentation_game(averages,bip_info,count_info):
 
     return
 #Main
+
+def split_fastballs_func(player_df):
+    player_df.loc[(player_df['TaggedPitchType'] == 'Fastball') & (player_df['BatterSide'] == 'Left'), 'TaggedPitchType'] = 'Fastball (L)'
+    player_df.loc[(player_df['TaggedPitchType'] == 'Fastball') & (player_df['BatterSide'] == 'Right'), 'TaggedPitchType'] = 'Fastball (R)'
+    return player_df
+
 def main ():
     global names
     global home_or_away
     global name_counter
+    global split_fastballs
     #name_fix_csv()
     pull_names_from_trackman()
     #box = pull_data_from_box_score(home_or_away)
@@ -1049,7 +1143,10 @@ def main ():
         pitch_loaction_chart(player_df)
         #create_presentation_game(average_pitch_types(),stats_from_box_score(box),get_bip_info(), get_count_percents())
         #create_presentation_game(average_pitch_types(),pull_stats_from_trackman(),get_bip_info(), get_count_percents())
-        create_presentation_game(average_pitch_types(),get_bip_info(), get_count_percents())
+        #create_presentation_game(average_pitch_types(),get_bip_info(), get_count_percents())
+        if split_fastballs == 'on':
+            player_df = split_fastballs_func(player_df)
+        create_presentation_game(new_pitch_type_tables(player_df),get_bip_info(), get_count_percents())
         name_counter = name_counter + 1
 
 
