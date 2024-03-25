@@ -6,7 +6,7 @@ __pycache__/
 # C extensions
 *.so
 # Sheet Folder
-
+TempStorgae/
 Sheets/
 Fall 2022/
 Test/

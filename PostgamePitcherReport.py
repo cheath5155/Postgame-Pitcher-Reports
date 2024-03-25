@@ -42,23 +42,39 @@ game_type = 'Scrimmage'
 home_or_away = 'Home'
 
 #'on' or 'off' (Leave off for Opponents)
-annotate = 'on'
+annotate = 'off'
 
 #Folder/File name
-date = "3-7-24"
+date = "4-13-23"
 
 #Change to Team Name in Trackman File
-pitcher_team = "ORE_BEA"
+pitcher_team = "LSU_TIG"
 
 split_fastballs = 'off'
 
-#Opens Window to Choose CSV file
-csv_file =  filedialog.askopenfilename()
+# Opens Window to Choose CSV files
+csv_files = filedialog.askopenfilenames(title="Select CSV files", filetypes=(("CSV files", "*.csv"), ("all files", "*.*")))
+
+# Check if files were selected
+if csv_files:
+    # Initialize an empty list to store DataFrames
+    dfs = []
+
+    # Iterate through selected CSV files and read them into DataFrames
+    for file in csv_files:
+        df = pd.read_csv(file)
+        dfs.append(df)
+
+    # Concatenate all DataFrames
+    global_df = pd.concat(dfs, ignore_index=True)
+
+    # Print the concatenated DataFrame or perform further operations
+    print(global_df)
+else:
+    print("No CSV files selected.")
 
 #established global player counter
 j = 0
-
-global_df = pd.read_csv(csv_file)
 
 html = 'https://osubeavers.com/sports/baseball/stats/2023/arizona-state/boxscore/20007'
 
@@ -67,7 +83,7 @@ pitchtypes = ['Fastball', 'Fastball (R)', 'Fastball (L)','Sinker','Cutter', 'Sli
 name_counter = 0
 
 #List of Names for Players to Run program through
-names = []
+names = ['Skenes, Paul']
     
 
 def name_fix_csv():
@@ -163,8 +179,8 @@ def get_count_percents():
     one_one_df = pitcher_df[ (pitcher_df['Balls']==1) & (pitcher_df['Strikes']==1)]
     zero_zero_pitches = len(zero_zero_df.index)
     one_one_pitches = len(one_one_df.index)
-    zero_zero_strikes = (zero_zero_df['PitchCall'] == 'StrikeCalled').sum() + (zero_zero_df['PitchCall'] == 'StrikeSwinging').sum() + (zero_zero_df['PitchCall'] == 'InPlay').sum() + (zero_zero_df['PitchCall'] == 'FoulBall').sum()
-    one_one_strikes = (one_one_df['PitchCall'] == 'StrikeCalled').sum() + (one_one_df['PitchCall'] == 'StrikeSwinging').sum() + (one_one_df['PitchCall'] == 'InPlay').sum() + (one_one_df['PitchCall'] == 'FoulBall').sum()
+    zero_zero_strikes = (zero_zero_df['PitchCall'] == 'StrikeCalled').sum() + (zero_zero_df['PitchCall'] == 'StrikeSwinging').sum() + (zero_zero_df['PitchCall'] == 'InPlay').sum() + (zero_zero_df['PitchCall'] == 'FoulBall').sum() + (zero_zero_df['PitchCall'] == 'FoulBallNotFieldable').sum() + (one_one_df['PitchCall'] == 'FoulBallFieldable').sum()
+    one_one_strikes = (one_one_df['PitchCall'] == 'StrikeCalled').sum() + (one_one_df['PitchCall'] == 'StrikeSwinging').sum() + (one_one_df['PitchCall'] == 'InPlay').sum() + (one_one_df['PitchCall'] == 'FoulBall').sum() + (one_one_df['PitchCall'] == 'FoulBallNotFieldable').sum() + (one_one_df['PitchCall'] == 'FoulBallFieldable').sum()
     zero_zero_percent = ("%.0f" % round(100*(zero_zero_strikes/zero_zero_pitches),0)) + '%'
     one_one_percent = ("%.0f" % round(100*(one_one_strikes/one_one_pitches),0)) + '%'
 
@@ -243,9 +259,9 @@ def new_pitch_type_tables(player_df):
         swings = 0
         whiffs = 0
         for d in range(len(working_df)):
-            if working_df.at[d,'PitchCall'] in ('FoulBall', 'StrikeCalled', 'StrikeSwinging', 'InPlay'):
+            if working_df.at[d,'PitchCall'] in ('FoulBall', 'StrikeCalled', 'StrikeSwinging', 'InPlay', 'FoulBallNotFieldable', 'FoulBallFieldable'):
                 strikes = strikes + 1
-            if working_df.at[d,'PitchCall'] in ('FoulBall', 'StrikeSwinging', 'InPlay'):
+            if working_df.at[d,'PitchCall'] in ('FoulBall', 'StrikeSwinging', 'InPlay','FoulBallFieldable', 'FoulBallNotFieldable'):
                 swings = swings + 1
             if working_df.at[d,'PitchCall'] == 'StrikeSwinging':
                 whiffs = whiffs + 1
@@ -444,8 +460,8 @@ def rel_90_view(pitch_type_tables):
     ax.axes.yaxis.set_ticklabels([])
     plt.savefig(os.path.join(date, names[name_counter], 'RelH_90V' + '.png'), bbox_inches='tight', pad_inches = -0.02)              
     return
-'''
-def spin_efficency(player_df):
+
+'''def spin_efficency(player_df):
     player_df['yR'] = 60.5 - player_df['Extension']
     player_df['tR'] = (-player_df['vy0']-(player_df['vy0']**2-2*player_df['ay0']*(50-player_df['yR']))**0.5)/player_df['ay0']
     player_df['vxR'] = 
@@ -903,7 +919,7 @@ def main ():
     global name_counter
     global split_fastballs
     #name_fix_csv()
-    pull_names_from_trackman()
+    #pull_names_from_trackman()
     #box = pull_data_from_box_score(home_or_away)
     for k in range(len(names)):
         print(names[name_counter])
