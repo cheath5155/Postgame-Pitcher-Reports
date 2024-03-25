@@ -18,7 +18,7 @@ A Trackman v3 File with Proper Headers
 2) Open PostgamePitcherReport.py and change the pitching team name to the Trackman abbreviation.
 3) Run the program and select the CSV or multiple CSVs.
 4) The CSVs must be a Trackman V3 formatted CSV or a combined group of Trackman V3 CSVs.
-5) The final file will show up in a folder named the date variable. The folder will contain a PDF folder with all PDFs and a FOlder for each player with images for charts and the PowerPoint file.
+5) The final file will show up in a folder named the date variable. The folder will contain a PDF folder with all PDFs and a Folder for each player with images for charts and the PowerPoint file.
 
 ## Output
 The tool will generate a PDF report containing the following visualizations and sections:
@@ -27,3 +27,6 @@ The tool will generate a PDF report containing the following visualizations and 
 2) Pitch Location Chart: Diagram displaying the location of each pitch on the plate.
 3) Release Point Charts: Charts illustrating the release points on the X and Y axes.
 4) Data Summary by Pitch Type: Detailed breakdown of the data, including statistics for each pitch type.
+
+## Credit
+ -Author: Connor Heath
