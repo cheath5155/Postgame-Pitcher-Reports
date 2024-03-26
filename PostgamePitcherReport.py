@@ -83,7 +83,7 @@ pitchtypes = ['Fastball', 'Fastball (R)', 'Fastball (L)','Sinker','Cutter', 'Sli
 name_counter = 0
 
 #List of Names for Players to Run program through
-names = ['Skenes, Paul']
+names = []
     
 
 def name_fix_csv():
@@ -919,7 +919,7 @@ def main ():
     global name_counter
     global split_fastballs
     #name_fix_csv()
-    #pull_names_from_trackman()
+    pull_names_from_trackman()
     #box = pull_data_from_box_score(home_or_away)
     for k in range(len(names)):
         print(names[name_counter])
