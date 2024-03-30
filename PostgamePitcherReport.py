@@ -45,7 +45,7 @@ home_or_away = 'Home'
 annotate = 'off'
 
 #Folder/File name
-date = "1-1-24"
+date = "Gonzaga"
 
 #Change to Team Name in Trackman File
 pitcher_team = "GON_BUL"
@@ -67,6 +67,12 @@ if csv_files:
 
     # Concatenate all DataFrames
     global_df = pd.concat(dfs, ignore_index=True)
+    global_df['TaggedPitchType'] = global_df['TaggedPitchType'].replace('FourSeamFastBall', 'Fastball')
+    global_df['TaggedPitchType'] = global_df['TaggedPitchType'].replace('TwoSeamFastBall', 'Sinker')
+    global_df['TaggedPitchType'] = global_df['TaggedPitchType'].replace('OneSeamFastBall', 'Sinker')
+    global_df['TaggedPitchType'] = global_df['TaggedPitchType'].replace('Changeup', 'ChangeUp')
+
+
 
     # Print the concatenated DataFrame or perform further operations
     print(global_df)
