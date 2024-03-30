@@ -45,12 +45,12 @@ home_or_away = 'Home'
 annotate = 'off'
 
 #Folder/File name
-date = "4-13-23"
+date = "Gonzaga"
 
 #Change to Team Name in Trackman File
-pitcher_team = "LSU_TIG"
+pitcher_team = "GON_BUL"
 
-split_fastballs = 'off'
+split_fastballs = 'on'
 
 # Opens Window to Choose CSV files
 csv_files = filedialog.askopenfilenames(title="Select CSV files", filetypes=(("CSV files", "*.csv"), ("all files", "*.*")))
@@ -67,6 +67,12 @@ if csv_files:
 
     # Concatenate all DataFrames
     global_df = pd.concat(dfs, ignore_index=True)
+    global_df['TaggedPitchType'] = global_df['TaggedPitchType'].replace('FourSeamFastBall', 'Fastball')
+    global_df['TaggedPitchType'] = global_df['TaggedPitchType'].replace('TwoSeamFastBall', 'Sinker')
+    global_df['TaggedPitchType'] = global_df['TaggedPitchType'].replace('OneSeamFastBall', 'Sinker')
+    global_df['TaggedPitchType'] = global_df['TaggedPitchType'].replace('Changeup', 'ChangeUp')
+
+
 
     # Print the concatenated DataFrame or perform further operations
     print(global_df)
@@ -938,6 +944,7 @@ def main ():
             player_df = split_fastballs_func(player_df)
         create_presentation_game(new_pitch_type_tables(player_df),get_bip_info(), get_count_percents())
         name_counter = name_counter + 1
+
 
 
 main()
