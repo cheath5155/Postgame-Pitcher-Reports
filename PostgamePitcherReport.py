@@ -17,7 +17,6 @@ from pptx.util import Inches
 from pptx.enum.text import PP_ALIGN
 from pptx.enum.text import MSO_ANCHOR
 from pptx.dml.color import RGBColor
-import win32com.client
 from pptx.dml.color import RGBColor
 import time
 import matplotlib.patches as patches
@@ -42,15 +41,15 @@ game_type = 'Scrimmage'
 home_or_away = 'Home'
 
 #'on' or 'off' (Leave off for Opponents)
-annotate = 'off'
+annotate = 'on'
 
 #Folder/File name
-date = "Gonzaga"
+date = "Test"
 
 #Change to Team Name in Trackman File
-pitcher_team = "GON_BUL"
+pitcher_team = "ORE_BEA"
 
-split_fastballs = 'on'
+split_fastballs = 'off'
 
 # Opens Window to Choose CSV files
 csv_files = filedialog.askopenfilenames(title="Select CSV files", filetypes=(("CSV files", "*.csv"), ("all files", "*.*")))
@@ -70,6 +69,7 @@ if csv_files:
     global_df['TaggedPitchType'] = global_df['TaggedPitchType'].replace('FourSeamFastBall', 'Fastball')
     global_df['TaggedPitchType'] = global_df['TaggedPitchType'].replace('TwoSeamFastBall', 'Sinker')
     global_df['TaggedPitchType'] = global_df['TaggedPitchType'].replace('OneSeamFastBall', 'Sinker')
+    global_df['TaggedPitchType'] = global_df['TaggedPitchType'].replace('Four-Seam', 'Fastball')
     global_df['TaggedPitchType'] = global_df['TaggedPitchType'].replace('Changeup', 'ChangeUp')
 
 
@@ -255,8 +255,10 @@ def new_pitch_type_tables(player_df):
             tilt2str = str(tilt2)
 
         pitch_type_list.append(str(int(round(tilt1,0))) + ':' + tilt2str)
-        vaa_df = working_df[(working_df['PlateLocSide'] < 0.83083) & (working_df['PlateLocSide'] > -0.83083) & (working_df['PlateLocHeight'] < 3.67333) & (working_df['PlateLocHeight'] > 1.52417)]
-        pitch_type_list.append("%.2f" % round(vaa_df['VertApprAngle'].mean(),2))
+        cleaned_df = working_df.dropna(subset=['PlateLocSide', 'PlateLocHeight'])
+        in_zone_df = working_df[(working_df['PlateLocSide'] < 0.83083) & (working_df['PlateLocSide'] > -0.83083) & (working_df['PlateLocHeight'] < 3.67333) & (working_df['PlateLocHeight'] > 1.52417)]
+        #vaa_df = working_df[(working_df['PlateLocSide'] < 0.83083) & (working_df['PlateLocSide'] > -0.83083) & (working_df['PlateLocHeight'] < 2.24056) & (working_df['PlateLocHeight'] > 1.52417)]
+        pitch_type_list.append("%.2f" % round(in_zone_df['VertApprAngle'].mean(),2))
         pitch_type_list.append("%.2f" % round(working_df['RelHeight'].mean(),2))
         pitch_type_list.append("%.2f" % round(working_df['RelSide'].mean(),2))
         pitch_type_list.append("%.2f" % round(working_df['Extension'].mean(),2))
@@ -272,7 +274,10 @@ def new_pitch_type_tables(player_df):
             if working_df.at[d,'PitchCall'] == 'StrikeSwinging':
                 whiffs = whiffs + 1
         strike_percentage = round(100*(strikes/len(working_df)),0)
-        pitch_type_list.append(str(str(int(strike_percentage)) + '%'))
+        #pitch_type_list.append(str(str(int(strike_percentage)) + '%'))
+        in_zone_percentage = round(100*(len(in_zone_df)/len(cleaned_df)),0)
+        pitch_type_list.append(str(str(int(in_zone_percentage)) + '%'))
+
         if swings > 0:
             whiff_percentage = round(100*(whiffs/swings),0)
             pitch_type_list.append(str(str(int(whiff_percentage)) + '%'))
@@ -609,7 +614,7 @@ def create_presentation(averages):
     style_id = '{073A0DAA-6AF3-43AB-8588-CEC1D06C72B9}'
     tbl[0][-1].text = style_id
 
-    table_labels = ['Pitch Type','#',"AVG Velo","MAX Velo","AVG Spin","MAX Spin","Vert Break","Horz Break",'Tilt',"Rel Height","Rel Side","Exten-sion","Strike%","Whiff%"]
+    table_labels = ['Pitch Type','#',"AVG Velo","MAX Velo","AVG Spin","MAX Spin","Vert Break","Horz Break",'Tilt',"Rel Height","Rel Side","Exten-sion","InZone%","Whiff%"]
 
     #creating labels for values in all tables
     for i in range(len(table_labels)-2):
@@ -719,7 +724,7 @@ def create_presentation_game(averages,bip_info,count_info):
     tbl[0][-1].text = style_id
 
     table_labels = ['Pitch Type','#',"AVG Velo","MAX Velo","AVG Spin","MAX Spin","Vert Break",
-    "Horz Break",'Tilt','InZone VAA',"Rel Height","Rel Side","Exten-sion","Strike%","Whiff%"]
+    "Horz Break",'Tilt','InZone VAA',"Rel Height","Rel Side","Exten-sion","InZone%","Whiff%"]
 
 
     #creating labels for values in all tables
@@ -730,6 +735,8 @@ def create_presentation_game(averages,bip_info,count_info):
         if (i == 10 or i==13):
             cell.text_frame.paragraphs[0].font.size = Pt(12)
         if i==9:
+            cell.text_frame.paragraphs[0].font.size = Pt(11)
+        if i==13:
             cell.text_frame.paragraphs[0].font.size = Pt(11)
         cell.text_frame.paragraphs[0].font.name = 'Bahnschrift'
         cell.text_frame.paragraphs[0].alignment = PP_ALIGN.CENTER
