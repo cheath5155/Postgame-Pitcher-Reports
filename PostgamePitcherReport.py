@@ -44,12 +44,14 @@ home_or_away = 'Home'
 annotate = 'on'
 
 #Folder/File name
-date = "Test"
+date = "5-31-24"
 
 #Change to Team Name in Trackman File
 pitcher_team = "ORE_BEA"
 
 split_fastballs = 'off'
+
+in_zone = 'off'
 
 # Opens Window to Choose CSV files
 csv_files = filedialog.askopenfilenames(title="Select CSV files", filetypes=(("CSV files", "*.csv"), ("all files", "*.*")))
@@ -71,6 +73,9 @@ if csv_files:
     global_df['TaggedPitchType'] = global_df['TaggedPitchType'].replace('OneSeamFastBall', 'Sinker')
     global_df['TaggedPitchType'] = global_df['TaggedPitchType'].replace('Four-Seam', 'Fastball')
     global_df['TaggedPitchType'] = global_df['TaggedPitchType'].replace('Changeup', 'ChangeUp')
+    global_df['HorzBreak'] = global_df['HorzBreak'].astype(float)
+    global_df['InducedVertBreak'] = global_df['InducedVertBreak'].astype(float)
+
 
 
 
@@ -273,10 +278,13 @@ def new_pitch_type_tables(player_df):
                 swings = swings + 1
             if working_df.at[d,'PitchCall'] == 'StrikeSwinging':
                 whiffs = whiffs + 1
-        strike_percentage = round(100*(strikes/len(working_df)),0)
-        #pitch_type_list.append(str(str(int(strike_percentage)) + '%'))
-        in_zone_percentage = round(100*(len(in_zone_df)/len(cleaned_df)),0)
-        pitch_type_list.append(str(str(int(in_zone_percentage)) + '%'))
+
+        if in_zone == 'off':
+            strike_percentage = round(100*(strikes/len(working_df)),0)
+            pitch_type_list.append(str(str(int(strike_percentage)) + '%'))
+        else:
+            in_zone_percentage = round(100*(len(in_zone_df)/len(cleaned_df)),0)
+            pitch_type_list.append(str(str(int(in_zone_percentage)) + '%'))
 
         if swings > 0:
             whiff_percentage = round(100*(whiffs/swings),0)
@@ -723,8 +731,12 @@ def create_presentation_game(averages,bip_info,count_info):
     style_id = '{073A0DAA-6AF3-43AB-8588-CEC1D06C72B9}'
     tbl[0][-1].text = style_id
 
-    table_labels = ['Pitch Type','#',"AVG Velo","MAX Velo","AVG Spin","MAX Spin","Vert Break",
-    "Horz Break",'Tilt','InZone VAA',"Rel Height","Rel Side","Exten-sion","InZone%","Whiff%"]
+    if in_zone == 'off':
+        table_labels = ['Pitch Type','#',"AVG Velo","MAX Velo","AVG Spin","MAX Spin","Vert Break",
+        "Horz Break",'Tilt','InZone VAA',"Rel Height","Rel Side","Exten-sion","Strike%","Whiff%"]
+    else: 
+        table_labels = ['Pitch Type','#',"AVG Velo","MAX Velo","AVG Spin","MAX Spin","Vert Break",
+        "Horz Break",'Tilt','InZone VAA',"Rel Height","Rel Side","Exten-sion","InZone%","Whiff%"]
 
 
     #creating labels for values in all tables
